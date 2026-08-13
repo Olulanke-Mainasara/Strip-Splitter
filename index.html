@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Strip Splitter</title>
+
+    <!-- Favicon links -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="/icon-192.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#0f0e0c" id="themeColorMeta" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Strips" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+      :root {
+        --mono:
+          "SF Mono", "Menlo", "Monaco", "Cascadia Code", "Roboto Mono",
+          monospace;
+        --sans:
+          -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial,
+          sans-serif;
+      }
+      html[data-theme="dark"] {
+        --bg: #0a0908;
+        --panel: #14110d;
+        --line: #2a2520;
+        --text: #ece7db;
+        --text-dim: #a39c8f;
+        --text-faint: #6b6459;
+        --accent: #e0562a;
+        --accent-hover: #f16a3b;
+        --accent-ink: #17110b;
+        --field-bg: #1c1712;
+      }
+      html[data-theme="light"] {
+        --bg: #eae5d8;
+        --panel: #ddd6c4;
+        --line: #c9c0a9;
+        --text: #1c1712;
+        --text-dim: #5c5646;
+        --text-faint: #857c68;
+        --accent: #b8431f;
+        --accent-hover: #a03a1a;
+        --accent-ink: #f6f2e7;
+        --field-bg: #f2ede0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+      }
+      body {
+        min-height: 100vh;
+        padding: 32px 20px 60px;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        margin: 0 0 8px;
+      }
+      h1 {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: -0.01em;
+        margin: 0 0 6px;
+        color: var(--text);
+      }
+      .sub {
+        font-size: 14px;
+        color: var(--text-dim);
+        max-width: 56ch;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .theme-toggle {
+        display: flex;
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+        flex-shrink: 0;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+      }
+      .theme-toggle button {
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        padding: 8px 12px;
+        cursor: pointer;
+        font-family: var(--mono);
+        text-decoration: none;
+      }
+      .theme-toggle button.active {
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 700;
+      }
+
+      .dropzone {
+        border: 1px dashed var(--line);
+        border-radius: 2px;
+        background: var(--panel);
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease;
+        margin-bottom: 24px;
+      }
+      .dropzone.drag {
+        border-color: var(--accent);
+      }
+      .dropzone p {
+        margin: 0;
+        color: var(--text-dim);
+        font-size: 14px;
+      }
+      .dropzone .hint {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-faint);
+        margin-top: 6px;
+        letter-spacing: 0.04em;
+      }
+      .dropzone input {
+        display: none;
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        padding: 16px 18px;
+        margin-bottom: 24px;
+      }
+      .field {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .field label {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: var(--text-dim);
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .stepper button {
+        background: transparent;
+        border: none;
+        color: var(--text);
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+        cursor: pointer;
+        font-family: var(--sans);
+        text-decoration: none;
+      }
+      .stepper button:hover {
+        background: var(--field-bg);
+      }
+      .stepper span {
+        width: 36px;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 14px;
+        color: var(--accent);
+      }
+      .field select {
+        background: var(--field-bg);
+        color: var(--text);
+        border: 1px solid var(--line);
+        border-radius: 2px;
+        padding: 6px 8px;
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .btn {
+        font-family: var(--sans);
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        background: var(--accent);
+        color: var(--accent-ink);
+        border: none;
+        padding: 10px 18px;
+        border-radius: 2px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.1s ease;
+      }
+      .btn:hover {
+        background: var(--accent-hover);
+      }
+      .btn.secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--line);
+        font-weight: 400;
+      }
+      .btn.secondary:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      .strip-row {
+        display: flex;
+        gap: 2px;
+        background: var(--line);
+        padding: 2px;
+        border-radius: 2px;
+        overflow-x: auto;
+        margin-bottom: 14px;
+      }
+      .strip-card {
+        flex: 1 1 0;
+        min-width: 90px;
+        background: var(--panel);
+        display: flex;
+        flex-direction: column;
+      }
+      .strip-card img {
+        width: 100%;
+        display: block;
+        background: var(--bg);
+      }
+      .strip-card .label {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-dim);
+        text-align: center;
+        padding: 6px 4px 2px;
+        letter-spacing: 0.08em;
+      }
+      .strip-card .card-actions {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 2px 4px 8px;
+        flex-wrap: wrap;
+      }
+      .strip-card .card-actions button {
+        font-family: var(--sans);
+        font-size: 10px;
+        letter-spacing: 0.02em;
+        background: transparent;
+        border: none;
+        color: var(--accent);
+        padding: 4px 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border-radius: 2px;
+        transition: background 0.1s ease;
+        font-weight: 500;
+      }
+      .strip-card .card-actions button:hover {
+        background: var(--field-bg);
+      }
+      .strip-card .card-actions .save-phones {
+        color: var(--text-dim);
+      }
+      .strip-card .card-actions .save-phones:hover {
+        color: var(--accent);
+      }
+
+      .note {
+        font-size: 12px;
+        color: var(--text-faint);
+        line-height: 1.6;
+        max-width: 64ch;
+        font-family: var(--sans);
+      }
+      .note strong {
+        color: var(--text-dim);
+        font-weight: 600;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 26px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      canvas {
+        display: none;
+      }
+
+      footer {
+        margin-top: 40px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-faint);
+        letter-spacing: 0.08em;
+      }
+
+      /* override any link underline */
+      a,
+      button,
+      .btn,
+      .theme-toggle button,
+      .strip-card button {
+        text-decoration: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <header>
+          <h1>Strip Splitter</h1>
+          <p class="sub">
+            Cut one image into equal vertical panels so posting them in order,
+            left to right, reassembles the full picture across a carousel.
+          </p>
+        </header>
+        <div class="theme-toggle" id="themeToggle">
+          <button data-mode="dark" id="darkBtn">Dark</button>
+          <button data-mode="light" id="lightBtn">Light</button>
+        </div>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <p id="dz-text">Drop an image here, or click to choose one</p>
+        <p class="hint">PNG / JPG · one image at a time</p>
+        <input type="file" id="fileInput" accept="image/*" />
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label>Panels</label>
+          <div class="stepper">
+            <button id="minus" type="button">–</button>
+            <span id="count">3</span>
+            <button id="plus" type="button">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Gap</label>
+          <select id="gap">
+            <option value="0">None</option>
+            <option value="4" selected>Hairline</option>
+            <option value="14">Wide</option>
+          </select>
+        </div>
+        <button class="btn secondary" id="resplit" type="button" disabled>
+          Re-split
+        </button>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="downloadAll" disabled>
+          Download all (.zip)
+        </button>
+        <button class="btn" id="saveAllMobile" disabled>
+          Save all to photos
+        </button>
+      </div>
+
+      <div class="strip-row" id="stripRow"></div>
+
+      <p class="note" id="note" style="display: none">
+        <strong>Posting order:</strong> panel 1 goes first, then 2, then 3, and
+        so on. Images are displayed left to right usually, so keeping this order
+        is what makes the image line back up.
+      </p>
+
+      <canvas id="workCanvas"></canvas>
+
+      <footer>
+        <a
+          href="./install.html"
+          style="
+            color: var(--text-faint);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+          "
+          >How to install on home screen</a
+        >
+        · local only, nothing here uploads anywhere
+      </footer>
+    </div>
+
+    <script>
+      // ---- Theme handling ----
+      const root = document.documentElement;
+      const themeColorMeta = document.getElementById("themeColorMeta");
+      const darkBtn = document.getElementById("darkBtn");
+      const lightBtn = document.getElementById("lightBtn");
+
+      function applyTheme(mode) {
+        root.setAttribute("data-theme", mode);
+        themeColorMeta.setAttribute(
+          "content",
+          mode === "dark" ? "#0a0908" : "#eae5d8",
+        );
+        darkBtn.classList.toggle("active", mode === "dark");
+        lightBtn.classList.toggle("active", mode === "light");
+        try {
+          localStorage.setItem("strip-splitter-theme", mode);
+        } catch (e) {}
+      }
+
+      let savedTheme = null;
+      try {
+        savedTheme = localStorage.getItem("strip-splitter-theme");
+      } catch (e) {}
+      const systemPrefersLight =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: light)").matches;
+      applyTheme(savedTheme || (systemPrefersLight ? "light" : "dark"));
+
+      darkBtn.addEventListener("click", () => applyTheme("dark"));
+      lightBtn.addEventListener("click", () => applyTheme("light"));
+
+      // ---- PWA service worker ----
+      if (
+        "serviceWorker" in navigator &&
+        (location.protocol === "https:" || location.hostname === "localhost")
+      ) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch(() => {});
+        });
+      }
+
+      // ---- Splitter logic ----
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("fileInput");
+      const dzText = document.getElementById("dz-text");
+      const countEl = document.getElementById("count");
+      const minusBtn = document.getElementById("minus");
+      const plusBtn = document.getElementById("plus");
+      const gapSelect = document.getElementById("gap");
+      const resplitBtn = document.getElementById("resplit");
+      const downloadAllBtn = document.getElementById("downloadAll");
+      const saveAllMobileBtn = document.getElementById("saveAllMobile");
+      const stripRow = document.getElementById("stripRow");
+      const note = document.getElementById("note");
+
+      let currentImg = null;
+      let panelCount = 3;
+      let lastBlobs = [];
+      let panelCanvases = [];
+
+      function setPanelCount(n) {
+        panelCount = Math.min(8, Math.max(2, n));
+        countEl.textContent = panelCount;
+      }
+
+      minusBtn.addEventListener("click", () => setPanelCount(panelCount - 1));
+      plusBtn.addEventListener("click", () => setPanelCount(panelCount + 1));
+
+      dropzone.addEventListener("click", () => fileInput.click());
+      ["dragover", "dragenter"].forEach((evt) =>
+        dropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          dropzone.classList.add("drag");
+        }),
+      );
+      ["dragleave", "drop"].forEach((evt) =>
+        dropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove("drag");
+        }),
+      );
+      dropzone.addEventListener("drop", (e) => {
+        const file = e.dataTransfer.files[0];
+        if (file) loadFile(file);
+      });
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) loadFile(file);
+      });
+
+      function loadFile(file) {
+        if (!file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            currentImg = img;
+            dzText.textContent = file.name + " loaded — click to replace";
+            resplitBtn.disabled = false;
+            doSplit();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      resplitBtn.addEventListener("click", doSplit);
+      gapSelect.addEventListener("change", () => {
+        if (currentImg) doSplit();
+      });
+
+      // Helper: save single image to photos (mobile friendly)
+      async function saveToPhotos(blob, filename) {
+        if (navigator.share && navigator.canShare) {
+          try {
+            const file = new File([blob], filename, { type: "image/png" });
+            const shareData = { files: [file] };
+            if (navigator.canShare(shareData)) {
+              await navigator.share(shareData);
+              return;
+            }
+          } catch (e) {
+            // fallback
+          }
+        }
+        // fallback download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      }
+
+      // Save all panels to photos (bulk)
+      async function saveAllToPhotos() {
+        if (!lastBlobs.length) return;
+        // For mobile, we try to share all files at once if possible
+        if (navigator.share && navigator.canShare) {
+          try {
+            const files = lastBlobs.map(
+              (blob, i) =>
+                new File([blob], `panel-${i + 1}.png`, { type: "image/png" }),
+            );
+            const shareData = { files };
+            if (navigator.canShare(shareData)) {
+              await navigator.share(shareData);
+              return;
+            }
+          } catch (e) {
+            // fallback to individual saves
+          }
+        }
+        // Fallback: save each individually (sequential)
+        for (let i = 0; i < lastBlobs.length; i++) {
+          await saveToPhotos(lastBlobs[i], `panel-${i + 1}.png`);
+          // tiny delay between saves to avoid UI issues
+          await new Promise((r) => setTimeout(r, 300));
+        }
+      }
+
+      function doSplit() {
+        if (!currentImg) return;
+        const gap = parseInt(gapSelect.value, 10);
+        const w = currentImg.width;
+        const h = currentImg.height;
+        const panelW = Math.floor(w / panelCount);
+
+        stripRow.innerHTML = "";
+        stripRow.style.gap = gap + "px";
+        lastBlobs = [];
+        panelCanvases = [];
+        downloadAllBtn.disabled = true;
+        saveAllMobileBtn.disabled = true;
+
+        let done = 0;
+        for (let i = 0; i < panelCount; i++) {
+          const sx = i * panelW;
+          const sw = i === panelCount - 1 ? w - sx : panelW;
+
+          const c = document.createElement("canvas");
+          c.width = sw;
+          c.height = h;
+          const ctx = c.getContext("2d");
+          ctx.drawImage(currentImg, sx, 0, sw, h, 0, 0, sw, h);
+          panelCanvases.push(c);
+
+          const card = document.createElement("div");
+          card.className = "strip-card";
+
+          const imgEl = document.createElement("img");
+          imgEl.src = c.toDataURL("image/png");
+          card.appendChild(imgEl);
+
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = "PANEL " + (i + 1) + " / " + panelCount;
+          card.appendChild(label);
+
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const dlBtn = document.createElement("button");
+          dlBtn.textContent = "Download";
+          dlBtn.addEventListener("click", () => {
+            c.toBlob((blob) => {
+              const a = document.createElement("a");
+              a.href = URL.createObjectURL(blob);
+              a.download = "panel-" + (i + 1) + ".png";
+              a.click();
+            }, "image/png");
+          });
+          actions.appendChild(dlBtn);
+
+          const saveBtn = document.createElement("button");
+          saveBtn.textContent = "Save to photos";
+          saveBtn.className = "save-phones";
+          saveBtn.addEventListener("click", () => {
+            c.toBlob((blob) => {
+              saveToPhotos(blob, "panel-" + (i + 1) + ".png");
+            }, "image/png");
+          });
+          actions.appendChild(saveBtn);
+
+          card.appendChild(actions);
+          stripRow.appendChild(card);
+
+          c.toBlob((blob) => {
+            lastBlobs[i] = blob;
+            done++;
+            if (done === panelCount) {
+              downloadAllBtn.disabled = false;
+              saveAllMobileBtn.disabled = false;
+            }
+          }, "image/png");
+        }
+
+        note.style.display = "block";
+      }
+
+      downloadAllBtn.addEventListener("click", async () => {
+        if (!lastBlobs.length) return;
+        const zip = new JSZip();
+        lastBlobs.forEach((blob, i) => {
+          zip.file("panel-" + (i + 1) + ".png", blob);
+        });
+        const content = await zip.generateAsync({ type: "blob" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(content);
+        a.download = "strips.zip";
+        a.click();
+      });
+
+      saveAllMobileBtn.addEventListener("click", saveAllToPhotos);
+    </script>
+  </body>
+</html>

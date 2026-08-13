@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Install Strip Splitter</title>
+    
+    <!-- Link to your main app's favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/png" href="/icon-192.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#0f0e0c" id="themeColorMeta" />
+    
+    <style>
+      /* Reusing your exact CSS variables & theme logic so it matches perfectly */
+      :root {
+        --mono: "SF Mono", "Menlo", "Monaco", "Cascadia Code", "Roboto Mono", monospace;
+        --sans: -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+      }
+      html[data-theme="dark"] {
+        --bg: #0a0908;
+        --panel: #14110d;
+        --line: #2a2520;
+        --text: #ece7db;
+        --text-dim: #a39c8f;
+        --text-faint: #6b6459;
+        --accent: #e0562a;
+        --accent-hover: #f16a3b;
+        --accent-ink: #17110b;
+        --field-bg: #1c1712;
+      }
+      html[data-theme="light"] {
+        --bg: #eae5d8;
+        --panel: #ddd6c4;
+        --line: #c9c0a9;
+        --text: #1c1712;
+        --text-dim: #5c5646;
+        --text-faint: #857c68;
+        --accent: #b8431f;
+        --accent-hover: #a03a1a;
+        --accent-ink: #f6f2e7;
+        --field-bg: #f2ede0;
+      }
+
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; padding: 0;
+        background: var(--bg); color: var(--text);
+        font-family: var(--sans);
+      }
+      body {
+        min-height: 100vh;
+        padding: 32px 20px 60px;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      .wrap { max-width: 920px; margin: 0 auto; }
+
+      /* Top Bar / Header */
+      .topbar {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 16px; margin-bottom: 28px;
+      }
+      h1 {
+        font-family: var(--sans); font-weight: 700; font-size: 28px;
+        letter-spacing: -0.01em; margin: 0 0 6px; color: var(--text);
+      }
+      .sub {
+        font-size: 14px; color: var(--text-dim); max-width: 56ch; line-height: 1.5;
+      }
+
+      /* Theme Toggle */
+      .theme-toggle {
+        display: flex; border: 1px solid var(--line); border-radius: 2px; overflow: hidden;
+        flex-shrink: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em;
+      }
+      .theme-toggle button {
+        background: transparent; border: none; color: var(--text-dim);
+        padding: 8px 12px; cursor: pointer; font-family: var(--mono);
+      }
+      .theme-toggle button.active {
+        background: var(--accent); color: var(--accent-ink); font-weight: 700;
+      }
+
+      /* Guide Content */
+      .guide-card {
+        background: var(--panel); border: 1px solid var(--line);
+        border-radius: 2px; padding: 30px 32px; margin-bottom: 24px;
+      }
+      .guide-card h2 {
+        font-family: var(--sans); font-size: 20px; font-weight: 600;
+        margin-top: 0; margin-bottom: 12px; color: var(--text);
+        display: flex; align-items: center; gap: 10px;
+      }
+      .guide-card h2 .icon { font-size: 24px; }
+      
+      .step {
+        display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-start;
+      }
+      .step:last-child { margin-bottom: 0; }
+      .step-num {
+        background: var(--field-bg); color: var(--text-dim);
+        width: 28px; height: 28px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--mono); font-size: 12px; font-weight: 700;
+        flex-shrink: 0; margin-top: 2px;
+      }
+      .step-text p {
+        margin: 0 0 6px; font-size: 15px; line-height: 1.5; color: var(--text);
+      }
+      .step-text p strong { color: var(--accent); }
+      .step-text .caption {
+        font-size: 13px; color: var(--text-dim); font-family: var(--mono);
+      }
+      .separator {
+        border: 0; border-top: 1px solid var(--line); margin: 28px 0;
+      }
+
+      .btn {
+        font-family: var(--sans); font-size: 14px; font-weight: 600;
+        background: var(--accent); color: var(--accent-ink);
+        border: none; padding: 10px 20px; border-radius: 2px;
+        cursor: pointer; text-decoration: none; display: inline-block;
+        transition: background 0.1s ease;
+      }
+      .btn:hover { background: var(--accent-hover); }
+      .btn.secondary {
+        background: transparent; color: var(--text); border: 1px solid var(--line);
+      }
+      .btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+      .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+      
+      footer {
+        margin-top: 40px; font-family: var(--mono);
+        font-size: 10px; color: var(--text-faint); letter-spacing: 0.08em;
+      }
+      a { text-decoration: none !important; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <header>
+          <h1>Install Strip Splitter</h1>
+          <p class="sub">Add this tool to your home screen for quick access. No download from an app store needed!</p>
+        </header>
+        <div class="theme-toggle" id="themeToggle">
+          <button data-mode="dark" id="darkBtn">Dark</button>
+          <button data-mode="light" id="lightBtn">Light</button>
+        </div>
+      </div>
+
+      <!-- iOS / Apple Guide -->
+      <div class="guide-card">
+        <h2><span class="icon">🍎</span> Apple (iPhone / iPad)</h2>
+        
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-text">
+            <p>Open Strip Splitter in <strong>Safari</strong> (Chrome does not support this on iOS).</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-text">
+            <p>Tap the <strong>Share button</strong> at the bottom of the screen <em>(the square icon with an upward arrow).</em></p>
+            <p class="caption">Look for this at the bottom center of your screen.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-text">
+            <p>Scroll down and tap <strong>"Add to Home Screen"</strong>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-text">
+            <p>Tap <strong>"Add"</strong> in the top right corner. The app icon will now appear on your home screen!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Android Guide -->
+      <div class="guide-card">
+        <h2><span class="icon">🤖</span> Android (Chrome)</h2>
+        
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-text">
+            <p>Open Strip Splitter in <strong>Google Chrome</strong>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-text">
+            <p>Tap the <strong>three-dot menu</strong> in the top right corner.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-text">
+            <p>Tap <strong>"Add to Home screen"</strong>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-text">
+            <p>Tap <strong>"Add"</strong>. The app icon will appear on your home screen and open in full-screen standalone mode.</p>
+            <p class="caption">Pro-tip: You can also often tap the little icon in the address bar that says "Install App".</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a href="./index.html" class="btn secondary">← Back to Splitter</a>
+      </div>
+
+      <footer>local only, nothing here uploads anywhere</footer>
+    </div>
+
+    <script>
+      // Re-use your exact theme logic so the colors match 100%
+      const root = document.documentElement;
+      const themeColorMeta = document.getElementById("themeColorMeta");
+      const darkBtn = document.getElementById("darkBtn");
+      const lightBtn = document.getElementById("lightBtn");
+
+      function applyTheme(mode) {
+        root.setAttribute("data-theme", mode);
+        themeColorMeta.setAttribute("content", mode === "dark" ? "#0a0908" : "#eae5d8");
+        darkBtn.classList.toggle("active", mode === "dark");
+        lightBtn.classList.toggle("active", mode === "light");
+        try { localStorage.setItem("strip-splitter-theme", mode); } catch(e) {}
+      }
+
+      let savedTheme = null;
+      try { savedTheme = localStorage.getItem("strip-splitter-theme"); } catch(e) {}
+      const systemPrefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+      applyTheme(savedTheme || (systemPrefersLight ? "light" : "dark"));
+
+      darkBtn.addEventListener("click", () => applyTheme("dark"));
+      lightBtn.addEventListener("click", () => applyTheme("light"));
+    </script>
+  </body>
+</html>
