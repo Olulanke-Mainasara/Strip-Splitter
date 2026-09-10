@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -8,13 +8,12 @@
     />
     <title>Strip Splitter</title>
 
-    <!-- Favicon links -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate icon" type="image/png" href="/icon-192.png" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="./icon-192.png" />
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
 
     <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#0f0e0c" id="themeColorMeta" />
+    <meta name="theme-color" content="#0a0a0b" id="themeColorMeta" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
@@ -23,680 +22,268 @@
     />
     <meta name="apple-mobile-web-app-title" content="Strips" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <style>
-      :root {
-        --mono:
-          "SF Mono", "Menlo", "Monaco", "Cascadia Code", "Roboto Mono",
-          monospace;
-        --sans:
-          -apple-system, "Segoe UI", "Roboto", "Helvetica Neue", Arial,
-          sans-serif;
-      }
-      html[data-theme="dark"] {
-        --bg: #0a0908;
-        --panel: #14110d;
-        --line: #2a2520;
-        --text: #ece7db;
-        --text-dim: #a39c8f;
-        --text-faint: #6b6459;
-        --accent: #e0562a;
-        --accent-hover: #f16a3b;
-        --accent-ink: #17110b;
-        --field-bg: #1c1712;
-      }
-      html[data-theme="light"] {
-        --bg: #eae5d8;
-        --panel: #ddd6c4;
-        --line: #c9c0a9;
-        --text: #1c1712;
-        --text-dim: #5c5646;
-        --text-faint: #857c68;
-        --accent: #b8431f;
-        --accent-hover: #a03a1a;
-        --accent-ink: #f6f2e7;
-        --field-bg: #f2ede0;
-      }
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/app.css" />
 
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--sans);
-      }
-      body {
-        min-height: 100vh;
-        padding: 32px 20px 60px;
-        transition:
-          background 0.15s ease,
-          color 0.15s ease;
-      }
-
-      .wrap {
-        max-width: 920px;
-        margin: 0 auto;
-      }
-
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        margin-bottom: 28px;
-      }
-      .eyebrow {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.18em;
-        color: var(--accent);
-        margin: 0 0 8px;
-      }
-      h1 {
-        font-family: var(--sans);
-        font-weight: 700;
-        font-size: 28px;
-        letter-spacing: -0.01em;
-        margin: 0 0 6px;
-        color: var(--text);
-      }
-      .sub {
-        font-size: 14px;
-        color: var(--text-dim);
-        max-width: 56ch;
-        line-height: 1.5;
-        margin: 0;
-      }
-
-      .theme-toggle {
-        display: flex;
-        border: 1px solid var(--line);
-        border-radius: 2px;
-        overflow: hidden;
-        flex-shrink: 0;
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.05em;
-      }
-      .theme-toggle button {
-        background: transparent;
-        border: none;
-        color: var(--text-dim);
-        padding: 8px 12px;
-        cursor: pointer;
-        font-family: var(--mono);
-        text-decoration: none;
-      }
-      .theme-toggle button.active {
-        background: var(--accent);
-        color: var(--accent-ink);
-        font-weight: 700;
-      }
-
-      .dropzone {
-        border: 1px dashed var(--line);
-        border-radius: 2px;
-        background: var(--panel);
-        padding: 40px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition:
-          border-color 0.15s ease,
-          background 0.15s ease;
-        margin-bottom: 24px;
-      }
-      .dropzone.drag {
-        border-color: var(--accent);
-      }
-      .dropzone p {
-        margin: 0;
-        color: var(--text-dim);
-        font-size: 14px;
-      }
-      .dropzone .hint {
-        font-family: var(--mono);
-        font-size: 11px;
-        color: var(--text-faint);
-        margin-top: 6px;
-        letter-spacing: 0.04em;
-      }
-      .dropzone input {
-        display: none;
-      }
-
-      .controls {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 2px;
-        padding: 16px 18px;
-        margin-bottom: 24px;
-      }
-      .field {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .field label {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.1em;
-        color: var(--text-dim);
-      }
-      .stepper {
-        display: flex;
-        align-items: center;
-        border: 1px solid var(--line);
-        border-radius: 2px;
-        overflow: hidden;
-      }
-      .stepper button {
-        background: transparent;
-        border: none;
-        color: var(--text);
-        width: 30px;
-        height: 30px;
-        font-size: 16px;
-        cursor: pointer;
-        font-family: var(--sans);
-        text-decoration: none;
-      }
-      .stepper button:hover {
-        background: var(--field-bg);
-      }
-      .stepper span {
-        width: 36px;
-        text-align: center;
-        font-family: var(--mono);
-        font-size: 14px;
-        color: var(--accent);
-      }
-      .field select {
-        background: var(--field-bg);
-        color: var(--text);
-        border: 1px solid var(--line);
-        border-radius: 2px;
-        padding: 6px 8px;
-        font-family: var(--mono);
-        font-size: 12px;
-      }
-
-      .btn {
-        font-family: var(--sans);
-        font-size: 13px;
-        letter-spacing: 0.02em;
-        text-transform: none;
-        background: var(--accent);
-        color: var(--accent-ink);
-        border: none;
-        padding: 10px 18px;
-        border-radius: 2px;
-        cursor: pointer;
-        font-weight: 600;
-        text-decoration: none;
-        transition: background 0.1s ease;
-      }
-      .btn:hover {
-        background: var(--accent-hover);
-      }
-      .btn.secondary {
-        background: transparent;
-        color: var(--text);
-        border: 1px solid var(--line);
-        font-weight: 400;
-      }
-      .btn.secondary:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-      .btn:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-      }
-
-      .strip-row {
-        display: flex;
-        gap: 2px;
-        background: var(--line);
-        padding: 2px;
-        border-radius: 2px;
-        overflow-x: auto;
-        margin-bottom: 14px;
-      }
-      .strip-card {
-        flex: 1 1 0;
-        min-width: 90px;
-        background: var(--panel);
-        display: flex;
-        flex-direction: column;
-      }
-      .strip-card img {
-        width: 100%;
-        display: block;
-        background: var(--bg);
-      }
-      .strip-card .label {
-        font-family: var(--mono);
-        font-size: 10px;
-        color: var(--text-dim);
-        text-align: center;
-        padding: 6px 4px 2px;
-        letter-spacing: 0.08em;
-      }
-      .strip-card .card-actions {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        padding: 2px 4px 8px;
-        flex-wrap: wrap;
-      }
-      .strip-card .card-actions button {
-        font-family: var(--sans);
-        font-size: 10px;
-        letter-spacing: 0.02em;
-        background: transparent;
-        border: none;
-        color: var(--accent);
-        padding: 4px 8px;
-        cursor: pointer;
-        text-decoration: none;
-        border-radius: 2px;
-        transition: background 0.1s ease;
-        font-weight: 500;
-      }
-      .strip-card .card-actions button:hover {
-        background: var(--field-bg);
-      }
-      .strip-card .card-actions .save-phones {
-        color: var(--text-dim);
-      }
-      .strip-card .card-actions .save-phones:hover {
-        color: var(--accent);
-      }
-
-      .note {
-        font-size: 12px;
-        color: var(--text-faint);
-        line-height: 1.6;
-        max-width: 64ch;
-        font-family: var(--sans);
-      }
-      .note strong {
-        color: var(--text-dim);
-        font-weight: 600;
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 26px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      canvas {
-        display: none;
-      }
-
-      footer {
-        margin-top: 40px;
-        font-family: var(--mono);
-        font-size: 10px;
-        color: var(--text-faint);
-        letter-spacing: 0.08em;
-      }
-
-      /* override any link underline */
-      a,
-      button,
-      .btn,
-      .theme-toggle button,
-      .strip-card button {
-        text-decoration: none !important;
-      }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+    <script src="./js/ui.js" defer></script>
+    <script src="./js/app.js" defer></script>
   </head>
+
   <body>
-    <div class="wrap">
-      <div class="topbar">
-        <header>
-          <h1>Strip Splitter</h1>
-          <p class="sub">
-            Cut one image into equal vertical panels so posting them in order,
-            left to right, reassembles the full picture across a carousel.
-          </p>
-        </header>
-        <div class="theme-toggle" id="themeToggle">
-          <button data-mode="dark" id="darkBtn">Dark</button>
-          <button data-mode="light" id="lightBtn">Light</button>
+    <!-- The mark, defined once and referenced wherever it is needed. -->
+    <svg class="sprite" xmlns="http://www.w3.org/2000/svg">
+      <symbol id="mark" viewBox="0 0 32 32">
+        <g style="fill: var(--mark-band, currentColor)">
+          <rect x="3.2" y="4" width="12" height="6.5" rx="1.4" />
+          <rect x="3.2" y="12.75" width="12" height="6.5" rx="1.4" />
+          <rect x="3.2" y="21.5" width="12" height="6.5" rx="1.4" />
+        </g>
+        <g style="fill: var(--mark-tile, #d8fb51)">
+          <rect x="17.2" y="4" width="5.1" height="5.1" rx="1.15" />
+          <rect x="23.5" y="4" width="5.1" height="5.1" rx="1.15" />
+          <rect x="17.2" y="10.3" width="5.1" height="5.1" rx="1.15" />
+          <rect x="23.5" y="10.3" width="5.1" height="5.1" rx="1.15" />
+          <rect x="17.2" y="16.6" width="5.1" height="5.1" rx="1.15" />
+          <rect x="23.5" y="16.6" width="5.1" height="5.1" rx="1.15" />
+          <rect x="17.2" y="22.9" width="5.1" height="5.1" rx="1.15" />
+          <rect x="23.5" y="22.9" width="5.1" height="5.1" rx="1.15" />
+        </g>
+      </symbol>
+    </svg>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <svg class="mark" aria-hidden="true"><use href="#mark" /></svg>
+          <p class="brand-name">Strip Splitter</p>
         </div>
+
+        <div class="seg seg-sm" id="themeSeg" role="radiogroup" aria-label="Theme">
+          <span class="seg-thumb" aria-hidden="true"></span>
+          <button type="button" role="radio" data-val="dark" aria-checked="true">
+            Dark
+          </button>
+          <button type="button" role="radio" data-val="light" aria-checked="false">
+            Light
+          </button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <!-- ---------------- Stage ---------------- -->
+        <section class="stage-col">
+          <div class="stage" id="stage">
+            <div class="drop" id="drop" role="button" tabindex="0"
+              aria-label="Choose an image to split">
+              <svg class="mark mark-lg" aria-hidden="true"><use href="#mark" /></svg>
+              <h1>Cut a long page into pieces that line back up.</h1>
+              <p>Drop an image here, or click to choose one.</p>
+              <p class="hint">png · jpg · webp — or paste from the clipboard</p>
+            </div>
+
+            <div class="imgbox" id="imgbox" hidden>
+              <img id="preview" alt="Loaded image with cut guides" />
+              <div class="guides" id="guides"></div>
+              <div class="cropshade" id="cropshade" hidden></div>
+            </div>
+          </div>
+
+          <div class="stage-bar">
+            <div class="file-meta">
+              <span class="file-name" id="fileName"></span>
+              <span class="file-dims" id="fileDims"></span>
+            </div>
+            <div class="seg seg-sm" id="fitSeg" role="radiogroup" aria-label="Preview size" hidden>
+              <span class="seg-thumb" aria-hidden="true"></span>
+              <button type="button" role="radio" data-val="contain" aria-checked="true">
+                Fit
+              </button>
+              <button type="button" role="radio" data-val="width" aria-checked="false">
+                Fill width
+              </button>
+            </div>
+            <button class="btn ghost" id="replaceBtn" type="button" hidden>
+              Replace image
+            </button>
+          </div>
+        </section>
+
+        <!-- ---------------- Rail ---------------- -->
+        <aside class="rail">
+          <div class="group">
+            <p class="group-head">Mode</p>
+            <div class="seg seg-full" id="modeSeg" role="radiogroup"
+              aria-label="Split mode">
+              <span class="seg-thumb" aria-hidden="true"></span>
+              <button type="button" role="radio" data-val="slice" aria-checked="true">
+                Slice
+              </button>
+              <button type="button" role="radio" data-val="columns" aria-checked="false">
+                Columns
+              </button>
+              <button type="button" role="radio" data-val="grid" aria-checked="false">
+                Grid
+              </button>
+            </div>
+          </div>
+
+          <!-- Slice -->
+          <div class="group" id="panel-slice">
+            <div class="group-row">
+              <p class="group-head">Parts, top to bottom</p>
+            </div>
+            <div class="group-row">
+              <div class="chips" id="sliceChips">
+                <button class="chip" type="button" data-val="2" aria-pressed="false">2</button>
+                <button class="chip" type="button" data-val="3" aria-pressed="true">3</button>
+                <button class="chip" type="button" data-val="4" aria-pressed="false">4</button>
+              </div>
+              <div class="stepper" data-stepper="slice">
+                <button type="button" data-step="-1" aria-label="One part fewer">–</button>
+                <span class="val" id="sliceVal">3</span>
+                <button type="button" data-step="1" aria-label="One part more">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columns -->
+          <div class="group" id="panel-columns" hidden>
+            <div class="group-row">
+              <p class="group-head">Panels, left to right</p>
+            </div>
+            <div class="group-row">
+              <div class="chips" id="colsChips">
+                <button class="chip" type="button" data-val="2" aria-pressed="false">2</button>
+                <button class="chip" type="button" data-val="3" aria-pressed="true">3</button>
+                <button class="chip" type="button" data-val="4" aria-pressed="false">4</button>
+              </div>
+              <div class="stepper" data-stepper="columns">
+                <button type="button" data-step="-1" aria-label="One panel fewer">–</button>
+                <span class="val" id="columnsVal">3</span>
+                <button type="button" data-step="1" aria-label="One panel more">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid -->
+          <div class="group" id="panel-grid" hidden>
+            <div class="group-row">
+              <p class="group-head">Columns</p>
+            </div>
+            <div class="group-row">
+              <div class="chips" id="gridColsChips">
+                <button class="chip" type="button" data-val="3" aria-pressed="true">3</button>
+                <button class="chip" type="button" data-val="4" aria-pressed="false">4</button>
+                <button class="chip" type="button" data-val="5" aria-pressed="false">5</button>
+              </div>
+              <div class="stepper" data-stepper="gridCols">
+                <button type="button" data-step="-1" aria-label="One column fewer">–</button>
+                <span class="val" id="gridColsVal">3</span>
+                <button type="button" data-step="1" aria-label="One column more">+</button>
+              </div>
+            </div>
+
+            <label class="switch-row">
+              <span>Auto rows — keeps tiles square</span>
+              <input type="checkbox" id="autoRows" checked />
+              <span class="switch" aria-hidden="true"></span>
+            </label>
+
+            <div class="subgroup" id="manualRows" hidden>
+              <div class="group-row">
+                <p class="group-head">Rows</p>
+                <div class="stepper" data-stepper="gridRows">
+                  <button type="button" data-step="-1" aria-label="One row fewer">–</button>
+                  <span class="val" id="gridRowsVal">3</span>
+                  <button type="button" data-step="1" aria-label="One row more">+</button>
+                </div>
+              </div>
+              <div class="group-row">
+                <p class="group-head">Aspect</p>
+                <div class="seg seg-sm" id="fitModeSeg" role="radiogroup" aria-label="Aspect handling">
+                  <span class="seg-thumb" aria-hidden="true"></span>
+                  <button type="button" role="radio" data-val="crop" aria-checked="true">Crop</button>
+                  <button type="button" role="radio" data-val="pad" aria-checked="false">Pad</button>
+                </div>
+              </div>
+              <div class="group-row" id="padRow" hidden>
+                <p class="group-head">Pad colour</p>
+                <select id="padColor">
+                  <option value="#ffffff">White</option>
+                  <option value="#000000">Black</option>
+                  <option value="transparent">Transparent</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Readout -->
+          <div class="readout" aria-live="polite">
+            <div class="count" id="outCount">—</div>
+            <div class="spec" id="outSpec">Load an image to begin</div>
+            <div class="flag" id="outFlag" hidden></div>
+          </div>
+
+          <!-- Export -->
+          <div class="group">
+            <div class="group-row">
+              <p class="group-head">Format</p>
+              <select id="format">
+                <option value="png">PNG — lossless</option>
+                <option value="jpeg">JPEG — smaller</option>
+              </select>
+            </div>
+
+            <div class="btn-stack">
+              <button class="btn" id="saveBtn" type="button" disabled>
+                <span class="lbl lbl-main">Save to Photos</span>
+                <span class="lbl lbl-done">Sent ✓</span>
+              </button>
+              <button class="btn secondary" id="zipBtn" type="button" disabled>
+                <span class="lbl lbl-main">Download .zip</span>
+                <span class="lbl lbl-done">Downloaded ✓</span>
+              </button>
+              <button class="btn ghost" id="seqBtn" type="button" disabled>
+                Save one by one — guarantees order
+              </button>
+            </div>
+
+            <div id="progressWrap" hidden>
+              <div class="progress"><i id="progressBar"></i></div>
+              <div class="progress-text" id="progressText"></div>
+            </div>
+          </div>
+        </aside>
       </div>
 
-      <div class="dropzone" id="dropzone">
-        <p id="dz-text">Drop an image here, or click to choose one</p>
-        <p class="hint">PNG / JPG · one image at a time</p>
-        <input type="file" id="fileInput" accept="image/*" />
-      </div>
-
-      <div class="controls">
-        <div class="field">
-          <label>Panels</label>
-          <div class="stepper">
-            <button id="minus" type="button">–</button>
-            <span id="count">3</span>
-            <button id="plus" type="button">+</button>
+      <!-- ---------------- Results ---------------- -->
+      <section class="results" id="results" hidden>
+        <div class="results-bar">
+          <h2 class="results-title">
+            Pieces<span id="resultsCount"></span>
+          </h2>
+          <div class="seg seg-sm" id="gapSeg" role="radiogroup" aria-label="Preview gap">
+            <span class="seg-thumb" aria-hidden="true"></span>
+            <button type="button" role="radio" data-val="0" aria-checked="false">Flush</button>
+            <button type="button" role="radio" data-val="4" aria-checked="true">Thin</button>
+            <button type="button" role="radio" data-val="14" aria-checked="false">Wide</button>
           </div>
         </div>
-        <div class="field">
-          <label>Gap</label>
-          <select id="gap">
-            <option value="0">None</option>
-            <option value="4" selected>Hairline</option>
-            <option value="14">Wide</option>
-          </select>
-        </div>
-        <button class="btn secondary" id="resplit" type="button" disabled>
-          Re-split
-        </button>
-      </div>
-
-      <div class="actions">
-        <button class="btn" id="downloadAll" disabled>
-          Download all (.zip)
-        </button>
-        <button class="btn" id="saveAllMobile" disabled>
-          Save all to photos
-        </button>
-      </div>
-
-      <div class="strip-row" id="stripRow"></div>
-
-      <p class="note" id="note" style="display: none">
-        <strong>Posting order:</strong> panel 1 goes first, then 2, then 3, and
-        so on. Images are displayed left to right usually, so keeping this order
-        is what makes the image line back up.
-      </p>
-
-      <canvas id="workCanvas"></canvas>
+        <div class="tilegrid" id="tilegrid"></div>
+        <p class="note" id="note"></p>
+      </section>
 
       <footer>
-        <a
-          href="./install.html"
-          style="
-            color: var(--text-faint);
-            text-decoration: underline;
-            text-underline-offset: 2px;
-          "
-          >How to install on home screen</a
-        >
-        · local only, nothing here uploads anywhere
+        <a href="./install.html">Install on your home screen</a>
+        <span>·</span>
+        <span>Everything runs on this device. Nothing uploads anywhere.</span>
       </footer>
     </div>
 
-    <script>
-      // ---- Theme handling ----
-      const root = document.documentElement;
-      const themeColorMeta = document.getElementById("themeColorMeta");
-      const darkBtn = document.getElementById("darkBtn");
-      const lightBtn = document.getElementById("lightBtn");
+    <input type="file" id="fileInput" accept="image/*" class="sr-only"
+      aria-label="Image file to split" />
 
-      function applyTheme(mode) {
-        root.setAttribute("data-theme", mode);
-        themeColorMeta.setAttribute(
-          "content",
-          mode === "dark" ? "#0a0908" : "#eae5d8",
-        );
-        darkBtn.classList.toggle("active", mode === "dark");
-        lightBtn.classList.toggle("active", mode === "light");
-        try {
-          localStorage.setItem("strip-splitter-theme", mode);
-        } catch (e) {}
-      }
-
-      let savedTheme = null;
-      try {
-        savedTheme = localStorage.getItem("strip-splitter-theme");
-      } catch (e) {}
-      const systemPrefersLight =
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: light)").matches;
-      applyTheme(savedTheme || (systemPrefersLight ? "light" : "dark"));
-
-      darkBtn.addEventListener("click", () => applyTheme("dark"));
-      lightBtn.addEventListener("click", () => applyTheme("light"));
-
-      // ---- PWA service worker ----
-      if (
-        "serviceWorker" in navigator &&
-        (location.protocol === "https:" || location.hostname === "localhost")
-      ) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("./sw.js").catch(() => {});
-        });
-      }
-
-      // ---- Splitter logic ----
-      const dropzone = document.getElementById("dropzone");
-      const fileInput = document.getElementById("fileInput");
-      const dzText = document.getElementById("dz-text");
-      const countEl = document.getElementById("count");
-      const minusBtn = document.getElementById("minus");
-      const plusBtn = document.getElementById("plus");
-      const gapSelect = document.getElementById("gap");
-      const resplitBtn = document.getElementById("resplit");
-      const downloadAllBtn = document.getElementById("downloadAll");
-      const saveAllMobileBtn = document.getElementById("saveAllMobile");
-      const stripRow = document.getElementById("stripRow");
-      const note = document.getElementById("note");
-
-      let currentImg = null;
-      let panelCount = 3;
-      let lastBlobs = [];
-      let panelCanvases = [];
-
-      function setPanelCount(n) {
-        panelCount = Math.min(8, Math.max(2, n));
-        countEl.textContent = panelCount;
-      }
-
-      minusBtn.addEventListener("click", () => setPanelCount(panelCount - 1));
-      plusBtn.addEventListener("click", () => setPanelCount(panelCount + 1));
-
-      dropzone.addEventListener("click", () => fileInput.click());
-      ["dragover", "dragenter"].forEach((evt) =>
-        dropzone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          dropzone.classList.add("drag");
-        }),
-      );
-      ["dragleave", "drop"].forEach((evt) =>
-        dropzone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          dropzone.classList.remove("drag");
-        }),
-      );
-      dropzone.addEventListener("drop", (e) => {
-        const file = e.dataTransfer.files[0];
-        if (file) loadFile(file);
-      });
-      fileInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) loadFile(file);
-      });
-
-      function loadFile(file) {
-        if (!file.type.startsWith("image/")) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => {
-            currentImg = img;
-            dzText.textContent = file.name + " loaded — click to replace";
-            resplitBtn.disabled = false;
-            doSplit();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-
-      resplitBtn.addEventListener("click", doSplit);
-      gapSelect.addEventListener("change", () => {
-        if (currentImg) doSplit();
-      });
-
-      // Helper: save single image to photos (mobile friendly)
-      async function saveToPhotos(blob, filename) {
-        if (navigator.share && navigator.canShare) {
-          try {
-            const file = new File([blob], filename, { type: "image/png" });
-            const shareData = { files: [file] };
-            if (navigator.canShare(shareData)) {
-              await navigator.share(shareData);
-              return;
-            }
-          } catch (e) {
-            // fallback
-          }
-        }
-        // fallback download
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 10000);
-      }
-
-      // Save all panels to photos (bulk)
-      async function saveAllToPhotos() {
-        if (!lastBlobs.length) return;
-        // For mobile, we try to share all files at once if possible
-        if (navigator.share && navigator.canShare) {
-          try {
-            const files = lastBlobs.map(
-              (blob, i) =>
-                new File([blob], `panel-${i + 1}.png`, { type: "image/png" }),
-            );
-            const shareData = { files };
-            if (navigator.canShare(shareData)) {
-              await navigator.share(shareData);
-              return;
-            }
-          } catch (e) {
-            // fallback to individual saves
-          }
-        }
-        // Fallback: save each individually (sequential)
-        for (let i = 0; i < lastBlobs.length; i++) {
-          await saveToPhotos(lastBlobs[i], `panel-${i + 1}.png`);
-          // tiny delay between saves to avoid UI issues
-          await new Promise((r) => setTimeout(r, 300));
-        }
-      }
-
-      function doSplit() {
-        if (!currentImg) return;
-        const gap = parseInt(gapSelect.value, 10);
-        const w = currentImg.width;
-        const h = currentImg.height;
-        const panelW = Math.floor(w / panelCount);
-
-        stripRow.innerHTML = "";
-        stripRow.style.gap = gap + "px";
-        lastBlobs = [];
-        panelCanvases = [];
-        downloadAllBtn.disabled = true;
-        saveAllMobileBtn.disabled = true;
-
-        let done = 0;
-        for (let i = 0; i < panelCount; i++) {
-          const sx = i * panelW;
-          const sw = i === panelCount - 1 ? w - sx : panelW;
-
-          const c = document.createElement("canvas");
-          c.width = sw;
-          c.height = h;
-          const ctx = c.getContext("2d");
-          ctx.drawImage(currentImg, sx, 0, sw, h, 0, 0, sw, h);
-          panelCanvases.push(c);
-
-          const card = document.createElement("div");
-          card.className = "strip-card";
-
-          const imgEl = document.createElement("img");
-          imgEl.src = c.toDataURL("image/png");
-          card.appendChild(imgEl);
-
-          const label = document.createElement("div");
-          label.className = "label";
-          label.textContent = "PANEL " + (i + 1) + " / " + panelCount;
-          card.appendChild(label);
-
-          const actions = document.createElement("div");
-          actions.className = "card-actions";
-
-          const dlBtn = document.createElement("button");
-          dlBtn.textContent = "Download";
-          dlBtn.addEventListener("click", () => {
-            c.toBlob((blob) => {
-              const a = document.createElement("a");
-              a.href = URL.createObjectURL(blob);
-              a.download = "panel-" + (i + 1) + ".png";
-              a.click();
-            }, "image/png");
-          });
-          actions.appendChild(dlBtn);
-
-          const saveBtn = document.createElement("button");
-          saveBtn.textContent = "Save to photos";
-          saveBtn.className = "save-phones";
-          saveBtn.addEventListener("click", () => {
-            c.toBlob((blob) => {
-              saveToPhotos(blob, "panel-" + (i + 1) + ".png");
-            }, "image/png");
-          });
-          actions.appendChild(saveBtn);
-
-          card.appendChild(actions);
-          stripRow.appendChild(card);
-
-          c.toBlob((blob) => {
-            lastBlobs[i] = blob;
-            done++;
-            if (done === panelCount) {
-              downloadAllBtn.disabled = false;
-              saveAllMobileBtn.disabled = false;
-            }
-          }, "image/png");
-        }
-
-        note.style.display = "block";
-      }
-
-      downloadAllBtn.addEventListener("click", async () => {
-        if (!lastBlobs.length) return;
-        const zip = new JSZip();
-        lastBlobs.forEach((blob, i) => {
-          zip.file("panel-" + (i + 1) + ".png", blob);
-        });
-        const content = await zip.generateAsync({ type: "blob" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(content);
-        a.download = "strips.zip";
-        a.click();
-      });
-
-      saveAllMobileBtn.addEventListener("click", saveAllToPhotos);
-    </script>
   </body>
 </html>

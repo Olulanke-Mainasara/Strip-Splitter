@@ -1,8 +1,18 @@
-const CACHE = 'strip-splitter-v1';
+const CACHE = 'strip-splitter-v3';
 const SHELL = [
   './',
   './index.html',
+  './install.html',
   './manifest.json',
+  './css/tokens.css',
+  './css/base.css',
+  './css/app.css',
+  './css/install.css',
+  './js/ui.js',
+  './js/app.js',
+  './favicon.svg',
+  './favicon.ico',
+  './apple-touch-icon.png',
   './icon-192.png',
   './icon-512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
@@ -10,7 +20,10 @@ const SHELL = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(SHELL))
+    caches.open(CACHE).then((cache) =>
+      // One bad URL shouldn't sink the whole install.
+      Promise.all(SHELL.map((url) => cache.add(url).catch(() => {})))
+    )
   );
   self.skipWaiting();
 });
@@ -24,18 +37,39 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Cache-first for the app shell, network-first fallback for anything else.
+// Network-first for the app itself so a new build lands without a hard reload;
+// cache-first for everything else.
 self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+
+  const isDoc = req.mode === 'navigate' || req.destination === 'document';
+
+  if (isDoc) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const clone = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, clone));
+          return res;
+        })
+        .catch(() => caches.match(req).then((c) => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
+    caches.match(req).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (response.ok && event.request.method === 'GET') {
-          const clone = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => cached);
+      return fetch(req)
+        .then((res) => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, clone));
+          }
+          return res;
+        })
+        .catch(() => cached);
     })
   );
 });

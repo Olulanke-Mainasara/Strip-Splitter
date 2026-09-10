@@ -1,0 +1,275 @@
+/* Shared components — the parts both pages are built from.
+   Page shell, top bar, mark, segmented control, buttons, footer. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding: 0 20px calc(64px + env(safe-area-inset-bottom));
+  transition:
+    background var(--d) ease,
+    color var(--d) ease;
+}
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mark {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: block;
+  --mark-band: currentColor;
+  --mark-tile: var(--accent);
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 640;
+  letter-spacing: -0.015em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.seg {
+  position: relative;
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--panel-2);
+  border-radius: var(--r);
+  box-shadow: inset 0 0 0 1px var(--line);
+  flex: none;
+}
+
+.seg-thumb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  background: var(--accent);
+  border-radius: 7px;
+  pointer-events: none;
+  transition:
+    transform var(--d) var(--e-out),
+    width var(--d) var(--e-out),
+    height var(--d) var(--e-out);
+}
+
+.seg button {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--dim);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 560;
+  letter-spacing: -0.005em;
+  padding: 6px 13px;
+  border-radius: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--d-fast) ease;
+}
+
+.seg button[aria-checked="true"],
+.seg button[aria-pressed="true"] {
+  color: var(--accent-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .seg button:not([aria-checked="true"]):not([aria-pressed="true"]):hover {
+    color: var(--text);
+  }
+}
+
+.seg button:active {
+  transform: scale(var(--press));
+  transition: transform var(--d-fast) var(--e-out);
+}
+
+.seg.seg-sm button {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* Buttons */
+.btn {
+  position: relative;
+  appearance: none;
+  display: inline-block;
+  text-decoration: none;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 620;
+  letter-spacing: -0.005em;
+  padding: 11px 16px;
+  cursor: pointer;
+  transition:
+    transform var(--d-fast) var(--e-out),
+    background var(--d-fast) ease,
+    opacity var(--d-fast) ease;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(var(--press));
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-weight: 560;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--dim);
+  font-weight: 520;
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:not(:disabled):hover {
+    background: color-mix(in srgb, var(--accent) 86%, var(--text));
+  }
+  .btn.secondary:not(:disabled):hover {
+    background: var(--panel-2);
+  }
+  .btn.ghost:not(:disabled):hover {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+}
+
+.btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Label swap, blur-masked so the two states read as one object. */
+.btn .lbl {
+  display: block;
+  transition:
+    opacity var(--d) ease,
+    filter var(--d) ease;
+}
+
+.btn .lbl-done {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  filter: blur(3px);
+}
+
+.btn.done .lbl-main {
+  opacity: 0;
+  filter: blur(3px);
+}
+
+.btn.done .lbl-done {
+  opacity: 1;
+  filter: blur(0);
+}
+
+footer {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+
+footer a {
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  transition: color var(--d-fast) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  footer a:hover {
+    color: var(--accent-dim);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Holds the <symbol> the mark is stamped from; never renders itself. */
+.sprite {
+  display: none;
+}
+
+.seg-full {
+  width: 100%;
+}
+.seg-full button {
+  flex: 1;
+}
+

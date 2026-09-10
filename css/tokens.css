@@ -1,0 +1,64 @@
+/* Design tokens — palette, motion and radii.
+   Loaded first by every page; nothing here selects a component. */
+
+:root {
+  --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Monaco,
+    "Cascadia Mono", "Roboto Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Motion. Reduced-motion flattens the travel, keeps the fades. */
+  --e-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --e-io: cubic-bezier(0.77, 0, 0.175, 1);
+  --d-fast: 140ms;
+  --d: 220ms;
+  --d-slow: 260ms;
+  --lift: 8px;
+  --press: 0.97;
+
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 14px;
+}
+
+html[data-theme="dark"] {
+  --bg: #0a0a0b;
+  --panel: #131316;
+  --panel-2: #1b1b20;
+  --line: #27272d;
+  --line-strong: #3a3a43;
+  --text: #f2f2ef;
+  --dim: #9a9aa2;
+  --faint: #7e7e88;
+  --accent: #d8fb51;
+  --accent-dim: #a9c53a;
+  --accent-ink: #0a0a0b;
+  --danger: #ff7a5c;
+  --shade: rgba(6, 6, 7, 0.68);
+}
+
+html[data-theme="light"] {
+  --bg: #f1f1ee;
+  --panel: #ffffff;
+  --panel-2: #e8e8e2;
+  --line: #dcdcd4;
+  --line-strong: #c2c2b8;
+  --text: #101012;
+  --dim: #56565c;
+  --faint: #6b6b73;
+  --accent: #c3e92b;
+  --accent-dim: #5f7410;
+  --accent-ink: #101012;
+  --danger: #c0442a;
+  --shade: rgba(20, 20, 18, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-fast: 1ms;
+    --d: 150ms;
+    --d-slow: 150ms;
+    --lift: 0px;
+    --press: 1;
+  }
+}
