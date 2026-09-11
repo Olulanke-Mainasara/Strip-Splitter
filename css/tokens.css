@@ -16,6 +16,14 @@
   --lift: 8px;
   --press: 0.97;
 
+  /* Device safe areas. Zero on desktop; the notch, status bar and home
+     indicator on a phone. Every page edge is measured from these. */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --gutter: 20px;
+
   --r-sm: 6px;
   --r: 10px;
   --r-lg: 14px;

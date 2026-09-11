@@ -243,7 +243,7 @@ footer {
   flex-direction: column;
   gap: 18px;
   position: sticky;
-  top: 92px;
+  top: calc(92px + var(--safe-t));
 }
 
 .group {

@@ -1,4 +1,4 @@
-/* Strip Splitter — slice, columns and grid.
+/* Spliteet — slice, columns and grid.
    Depends on js/ui.js for DOM helpers and the segmented control. */
 (function () {
   "use strict";
@@ -41,8 +41,10 @@
      One engine. Modes are presets over cols × rows.
      ========================================================= */
   function dims() {
-    if (state.mode === "slice") return { cols: 1, rows: state.slice, fit: "none" };
-    if (state.mode === "columns") return { cols: state.columns, rows: 1, fit: "none" };
+    if (state.mode === "slice")
+      return { cols: 1, rows: state.slice, fit: "none" };
+    if (state.mode === "columns")
+      return { cols: state.columns, rows: 1, fit: "none" };
 
     const cols = state.gridCols;
     if (state.autoRows) {
@@ -405,8 +407,14 @@
     const s = tw / t.outW;
     sctx.drawImage(
       state.small,
-      sx, sy, sw, sh,
-      t.dx * s, t.dy * s, t.sw * s, t.sh * s,
+      sx,
+      sy,
+      sw,
+      sh,
+      t.dx * s,
+      t.dy * s,
+      t.sw * s,
+      t.sh * s,
     );
 
     const el = document.createElement("div");
@@ -470,7 +478,8 @@
       if (run !== resultsRun) return;
       const frag = document.createDocumentFragment();
       const end = Math.min(i + CHUNK, tiles.length);
-      for (; i < end; i++) frag.appendChild(buildTile(tiles[i], cap, k, scratch, sctx));
+      for (; i < end; i++)
+        frag.appendChild(buildTile(tiles[i], cap, k, scratch, sctx));
       tilegrid.appendChild(frag);
       if (i < tiles.length) requestAnimationFrame(chunk);
       else scratch.width = scratch.height = 0;
@@ -570,7 +579,9 @@
 
   function setBusy(on) {
     state.busy = on;
-    [zipBtn, saveBtn, seqBtn].forEach((b) => (b.disabled = on || !state.tiles.length));
+    [zipBtn, saveBtn, seqBtn].forEach(
+      (b) => (b.disabled = on || !state.tiles.length),
+    );
     if (!on) {
       setTimeout(() => {
         progressWrap.hidden = true;
@@ -646,7 +657,9 @@
     setBusy(true);
     try {
       const tiles = state.tiles;
-      const blobs = await renderBlobs(tiles, (d, n) => setProgress(d, n, "Encoding"));
+      const blobs = await renderBlobs(tiles, (d, n) =>
+        setProgress(d, n, "Encoding"),
+      );
       progressText.textContent = "Zipping…";
       const zip = new JSZip();
       blobs.forEach((b, i) => zip.file(tileName(tiles[i], tiles.length), b));
@@ -667,9 +680,12 @@
     setBusy(true);
     try {
       const tiles = state.tiles;
-      const blobs = await renderBlobs(tiles, (d, n) => setProgress(d, n, "Encoding"));
+      const blobs = await renderBlobs(tiles, (d, n) =>
+        setProgress(d, n, "Encoding"),
+      );
       const files = blobs.map(
-        (b, i) => new File([b], tileName(tiles[i], tiles.length), { type: mime() }),
+        (b, i) =>
+          new File([b], tileName(tiles[i], tiles.length), { type: mime() }),
       );
       if (await shareFiles(files)) {
         flashDone(saveBtn);
@@ -768,14 +784,19 @@
   /* Chip groups stay in step with their stepper. */
   function initChips(el, key) {
     $$(".chip", el).forEach((chip) =>
-      chip.addEventListener("click", () => setVal(key, Number(chip.dataset.val))),
+      chip.addEventListener("click", () =>
+        setVal(key, Number(chip.dataset.val)),
+      ),
     );
   }
 
   function syncChips(el, val) {
     if (!el) return;
     $$(".chip", el).forEach((c) =>
-      c.setAttribute("aria-pressed", Number(c.dataset.val) === val ? "true" : "false"),
+      c.setAttribute(
+        "aria-pressed",
+        Number(c.dataset.val) === val ? "true" : "false",
+      ),
     );
   }
 
@@ -818,7 +839,10 @@
   function syncGridRowsDefault() {
     if (!state.w) return;
     const cell = state.w / state.gridCols;
-    setVal("gridRows", clamp(Math.round(state.h / cell), 1, LIMITS.gridRows[1]));
+    setVal(
+      "gridRows",
+      clamp(Math.round(state.h / cell), 1, LIMITS.gridRows[1]),
+    );
     $("#gridRowsVal").textContent = state.gridRows;
   }
 
@@ -850,7 +874,8 @@
   Object.keys(LIMITS).forEach((key) => {
     const [lo, hi] = LIMITS[key];
     $$('[data-stepper="' + key + '"] button').forEach((b) => {
-      b.disabled = b.dataset.step === "-1" ? state[key] <= lo : state[key] >= hi;
+      b.disabled =
+        b.dataset.step === "-1" ? state[key] <= lo : state[key] >= hi;
     });
     syncChips(CHIPS[key], state[key]);
   });

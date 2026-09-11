@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Strip Splitter</title>
+    <title>Spliteet</title>
 
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="alternate icon" type="image/png" href="./icon-192.png" />
@@ -26,7 +26,10 @@
     <link rel="stylesheet" href="./css/base.css" />
     <link rel="stylesheet" href="./css/app.css" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+      defer
+    ></script>
     <script src="./js/ui.js" defer></script>
     <script src="./js/app.js" defer></script>
   </head>
@@ -57,15 +60,30 @@
       <header class="topbar">
         <div class="brand">
           <svg class="mark" aria-hidden="true"><use href="#mark" /></svg>
-          <p class="brand-name">Strip Splitter</p>
+          <p class="brand-name">Spliteet</p>
         </div>
 
-        <div class="seg seg-sm" id="themeSeg" role="radiogroup" aria-label="Theme">
+        <div
+          class="seg seg-sm"
+          id="themeSeg"
+          role="radiogroup"
+          aria-label="Theme"
+        >
           <span class="seg-thumb" aria-hidden="true"></span>
-          <button type="button" role="radio" data-val="dark" aria-checked="true">
+          <button
+            type="button"
+            role="radio"
+            data-val="dark"
+            aria-checked="true"
+          >
             Dark
           </button>
-          <button type="button" role="radio" data-val="light" aria-checked="false">
+          <button
+            type="button"
+            role="radio"
+            data-val="light"
+            aria-checked="false"
+          >
             Light
           </button>
         </div>
@@ -75,9 +93,16 @@
         <!-- ---------------- Stage ---------------- -->
         <section class="stage-col">
           <div class="stage" id="stage">
-            <div class="drop" id="drop" role="button" tabindex="0"
-              aria-label="Choose an image to split">
-              <svg class="mark mark-lg" aria-hidden="true"><use href="#mark" /></svg>
+            <div
+              class="drop"
+              id="drop"
+              role="button"
+              tabindex="0"
+              aria-label="Choose an image to split"
+            >
+              <svg class="mark mark-lg" aria-hidden="true">
+                <use href="#mark" />
+              </svg>
               <h1>Cut a long page into pieces that line back up.</h1>
               <p>Drop an image here, or click to choose one.</p>
               <p class="hint">png · jpg · webp — or paste from the clipboard</p>
@@ -95,12 +120,28 @@
               <span class="file-name" id="fileName"></span>
               <span class="file-dims" id="fileDims"></span>
             </div>
-            <div class="seg seg-sm" id="fitSeg" role="radiogroup" aria-label="Preview size" hidden>
+            <div
+              class="seg seg-sm"
+              id="fitSeg"
+              role="radiogroup"
+              aria-label="Preview size"
+              hidden
+            >
               <span class="seg-thumb" aria-hidden="true"></span>
-              <button type="button" role="radio" data-val="contain" aria-checked="true">
+              <button
+                type="button"
+                role="radio"
+                data-val="contain"
+                aria-checked="true"
+              >
                 Fit
               </button>
-              <button type="button" role="radio" data-val="width" aria-checked="false">
+              <button
+                type="button"
+                role="radio"
+                data-val="width"
+                aria-checked="false"
+              >
                 Fill width
               </button>
             </div>
@@ -114,16 +155,35 @@
         <aside class="rail">
           <div class="group">
             <p class="group-head">Mode</p>
-            <div class="seg seg-full" id="modeSeg" role="radiogroup"
-              aria-label="Split mode">
+            <div
+              class="seg seg-full"
+              id="modeSeg"
+              role="radiogroup"
+              aria-label="Split mode"
+            >
               <span class="seg-thumb" aria-hidden="true"></span>
-              <button type="button" role="radio" data-val="slice" aria-checked="true">
+              <button
+                type="button"
+                role="radio"
+                data-val="slice"
+                aria-checked="true"
+              >
                 Slice
               </button>
-              <button type="button" role="radio" data-val="columns" aria-checked="false">
+              <button
+                type="button"
+                role="radio"
+                data-val="columns"
+                aria-checked="false"
+              >
                 Columns
               </button>
-              <button type="button" role="radio" data-val="grid" aria-checked="false">
+              <button
+                type="button"
+                role="radio"
+                data-val="grid"
+                aria-checked="false"
+              >
                 Grid
               </button>
             </div>
@@ -136,14 +196,43 @@
             </div>
             <div class="group-row">
               <div class="chips" id="sliceChips">
-                <button class="chip" type="button" data-val="2" aria-pressed="false">2</button>
-                <button class="chip" type="button" data-val="3" aria-pressed="true">3</button>
-                <button class="chip" type="button" data-val="4" aria-pressed="false">4</button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="2"
+                  aria-pressed="false"
+                >
+                  2
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="3"
+                  aria-pressed="true"
+                >
+                  3
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="4"
+                  aria-pressed="false"
+                >
+                  4
+                </button>
               </div>
               <div class="stepper" data-stepper="slice">
-                <button type="button" data-step="-1" aria-label="One part fewer">–</button>
+                <button
+                  type="button"
+                  data-step="-1"
+                  aria-label="One part fewer"
+                >
+                  –
+                </button>
                 <span class="val" id="sliceVal">3</span>
-                <button type="button" data-step="1" aria-label="One part more">+</button>
+                <button type="button" data-step="1" aria-label="One part more">
+                  +
+                </button>
               </div>
             </div>
           </div>
@@ -155,14 +244,43 @@
             </div>
             <div class="group-row">
               <div class="chips" id="colsChips">
-                <button class="chip" type="button" data-val="2" aria-pressed="false">2</button>
-                <button class="chip" type="button" data-val="3" aria-pressed="true">3</button>
-                <button class="chip" type="button" data-val="4" aria-pressed="false">4</button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="2"
+                  aria-pressed="false"
+                >
+                  2
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="3"
+                  aria-pressed="true"
+                >
+                  3
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="4"
+                  aria-pressed="false"
+                >
+                  4
+                </button>
               </div>
               <div class="stepper" data-stepper="columns">
-                <button type="button" data-step="-1" aria-label="One panel fewer">–</button>
+                <button
+                  type="button"
+                  data-step="-1"
+                  aria-label="One panel fewer"
+                >
+                  –
+                </button>
                 <span class="val" id="columnsVal">3</span>
-                <button type="button" data-step="1" aria-label="One panel more">+</button>
+                <button type="button" data-step="1" aria-label="One panel more">
+                  +
+                </button>
               </div>
             </div>
           </div>
@@ -174,14 +292,47 @@
             </div>
             <div class="group-row">
               <div class="chips" id="gridColsChips">
-                <button class="chip" type="button" data-val="3" aria-pressed="true">3</button>
-                <button class="chip" type="button" data-val="4" aria-pressed="false">4</button>
-                <button class="chip" type="button" data-val="5" aria-pressed="false">5</button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="3"
+                  aria-pressed="true"
+                >
+                  3
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="4"
+                  aria-pressed="false"
+                >
+                  4
+                </button>
+                <button
+                  class="chip"
+                  type="button"
+                  data-val="5"
+                  aria-pressed="false"
+                >
+                  5
+                </button>
               </div>
               <div class="stepper" data-stepper="gridCols">
-                <button type="button" data-step="-1" aria-label="One column fewer">–</button>
+                <button
+                  type="button"
+                  data-step="-1"
+                  aria-label="One column fewer"
+                >
+                  –
+                </button>
                 <span class="val" id="gridColsVal">3</span>
-                <button type="button" data-step="1" aria-label="One column more">+</button>
+                <button
+                  type="button"
+                  data-step="1"
+                  aria-label="One column more"
+                >
+                  +
+                </button>
               </div>
             </div>
 
@@ -195,17 +346,44 @@
               <div class="group-row">
                 <p class="group-head">Rows</p>
                 <div class="stepper" data-stepper="gridRows">
-                  <button type="button" data-step="-1" aria-label="One row fewer">–</button>
+                  <button
+                    type="button"
+                    data-step="-1"
+                    aria-label="One row fewer"
+                  >
+                    –
+                  </button>
                   <span class="val" id="gridRowsVal">3</span>
-                  <button type="button" data-step="1" aria-label="One row more">+</button>
+                  <button type="button" data-step="1" aria-label="One row more">
+                    +
+                  </button>
                 </div>
               </div>
               <div class="group-row">
                 <p class="group-head">Aspect</p>
-                <div class="seg seg-sm" id="fitModeSeg" role="radiogroup" aria-label="Aspect handling">
+                <div
+                  class="seg seg-sm"
+                  id="fitModeSeg"
+                  role="radiogroup"
+                  aria-label="Aspect handling"
+                >
                   <span class="seg-thumb" aria-hidden="true"></span>
-                  <button type="button" role="radio" data-val="crop" aria-checked="true">Crop</button>
-                  <button type="button" role="radio" data-val="pad" aria-checked="false">Pad</button>
+                  <button
+                    type="button"
+                    role="radio"
+                    data-val="crop"
+                    aria-checked="true"
+                  >
+                    Crop
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    data-val="pad"
+                    aria-checked="false"
+                  >
+                    Pad
+                  </button>
                 </div>
               </div>
               <div class="group-row" id="padRow" hidden>
@@ -261,14 +439,33 @@
       <!-- ---------------- Results ---------------- -->
       <section class="results" id="results" hidden>
         <div class="results-bar">
-          <h2 class="results-title">
-            Pieces<span id="resultsCount"></span>
-          </h2>
-          <div class="seg seg-sm" id="gapSeg" role="radiogroup" aria-label="Preview gap">
+          <h2 class="results-title">Pieces<span id="resultsCount"></span></h2>
+          <div
+            class="seg seg-sm"
+            id="gapSeg"
+            role="radiogroup"
+            aria-label="Preview gap"
+          >
             <span class="seg-thumb" aria-hidden="true"></span>
-            <button type="button" role="radio" data-val="0" aria-checked="false">Flush</button>
-            <button type="button" role="radio" data-val="4" aria-checked="true">Thin</button>
-            <button type="button" role="radio" data-val="14" aria-checked="false">Wide</button>
+            <button
+              type="button"
+              role="radio"
+              data-val="0"
+              aria-checked="false"
+            >
+              Flush
+            </button>
+            <button type="button" role="radio" data-val="4" aria-checked="true">
+              Thin
+            </button>
+            <button
+              type="button"
+              role="radio"
+              data-val="14"
+              aria-checked="false"
+            >
+              Wide
+            </button>
           </div>
         </div>
         <div class="tilegrid" id="tilegrid"></div>
@@ -282,8 +479,12 @@
       </footer>
     </div>
 
-    <input type="file" id="fileInput" accept="image/*" class="sr-only"
-      aria-label="Image file to split" />
-
+    <input
+      type="file"
+      id="fileInput"
+      accept="image/*"
+      class="sr-only"
+      aria-label="Image file to split"
+    />
   </body>
 </html>

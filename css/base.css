@@ -13,16 +13,32 @@ body {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  padding: 0 20px calc(64px + env(safe-area-inset-bottom));
+  padding: 0 calc(var(--gutter) + var(--safe-r))
+    calc(64px + var(--safe-b)) calc(var(--gutter) + var(--safe-l));
   transition:
     background var(--d) ease,
     color var(--d) ease;
+}
+
+/* Installed on iOS the page runs under the status bar, so the top strip is
+   painted opaque across the full width and everything below clears it. */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--safe-t);
+  background: var(--bg);
+  z-index: 30;
+  pointer-events: none;
 }
 
 .app {
@@ -41,7 +57,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px 0 22px;
+  padding: calc(20px + var(--safe-t)) 0 22px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 22px;
 }

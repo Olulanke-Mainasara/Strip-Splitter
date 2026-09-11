@@ -1,4 +1,4 @@
-const CACHE = 'strip-splitter-v3';
+const CACHE = 'strip-splitter-v4';
 const SHELL = [
   './',
   './index.html',

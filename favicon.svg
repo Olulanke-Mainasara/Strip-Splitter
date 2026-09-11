@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- Strip Splitter mark: three whole bands (slice) beside a finer tile grid (grid). -->
+  <!-- Spliteet mark: three whole bands (slice) beside a finer tile grid (grid). -->
   <style>
     .ink { fill: #101012 }
     .tile { fill: #8FB420 }
